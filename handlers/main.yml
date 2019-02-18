@@ -1,0 +1,10 @@
+---
+# handlers file for ansible-nexus
+
+- name: start nexus
+  become: yes
+  shell: "{{ nexus_installation_dir }}/current/bin/nexus start"
+
+- name: restart nexus
+  become: yes
+  shell: "{{ nexus_installation_dir }}/current/bin/nexus restart"
