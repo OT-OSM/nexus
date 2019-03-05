@@ -1,0 +1,8 @@
+---
+# handlers file for ansible-nexus
+
+- name: restart nexus
+  service:
+    name: nexus
+    enabled: yes
+    state: "{{ nexus_service_state }}"
