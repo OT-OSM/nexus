@@ -64,7 +64,9 @@ Role Variables
 |**Variables**| **Default Values**| **Type**|
 
 Variable:- nexus_port: 8082|nexus_min_memory: 1200M|nexus_max_memory: 1200M|nexus_dir_mem_size: 2G|nexus_shared_dir: /opt/nexus_shared
+
 Default Values:- host_name: 'host'|nexus_version: '3.20.0-01'|nexus_port: 8082|nexus_os_user: 'nexus'|nexus_os_group: 'nexus'|nexus_os_user_sh                 ell: '/bin/bash'|nexus_installation_dir: '/opt'|nexus_service_state: 'restarted'
+
 Type:- Ubuntu| Redhat
 
  
