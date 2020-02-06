@@ -1,7 +1,7 @@
 ---
 # defaults file for ansible-nexus
 host_name: 'host'
-nexus_version: '3.15.2-01'
+nexus_version: '3.20.1-01'
 nexus_port: 8082
 nexus_os_user: 'nexus'
 nexus_os_group: 'nexus'
