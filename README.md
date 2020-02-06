@@ -8,6 +8,7 @@ Version History
 |**Date**| **Version**| **Description**| **Changed By** |
 |----------|---------|---------------|-----------------|
 |**6 February 2020** | v.3.20 | |
+|**9 APril 2019** | v.3.15 | |
 
 Salient Features
 ----------------
@@ -25,8 +26,7 @@ Supported OS
 Dependencies
 ------------
 
-* Java runtime versions other than 8 are not supported - do not use them.
-* Only 64 bit Java is supported, do not use 32 bit Java.
+* Java 8(64-bit)
 
 
 Directory Layout
@@ -63,9 +63,9 @@ Role Variables
 
 |**Variables**| **Default Values**| **Type**|
 
-nexus_port|nexus_min_memory|nexus_max_memory|nexus_dir_mem_size|nexus_shared_dir
-host_name|nexus_version|nexus_port|nexus_os_user|nexus_os_group|nexus_os_user_shell|nexus_installation_dir|nexus_service_state|
-install.yml|main.yml|RedHat.yml|Ubuntu.yml
+Variable:- nexus_port: 8082|nexus_min_memory: 1200M|nexus_max_memory: 1200M|nexus_dir_mem_size: 2G|nexus_shared_dir: /opt/nexus_shared
+Default Values:- host_name: 'host'|nexus_version: '3.20.0-01'|nexus_port: 8082|nexus_os_user: 'nexus'|nexus_os_group: 'nexus'|nexus_os_user_sh                 ell: '/bin/bash'|nexus_installation_dir: '/opt'|nexus_service_state: 'restarted'
+Type:- Ubuntu| Redhat
 
  
 Example Playbook
@@ -97,6 +97,10 @@ Future Proposed Changes
 
 #References
 
+* https://www.vogella.com/tutorials/Nexus/article.html
+
 # Author Information
+
+* mukesh tuteja
 
 * 
