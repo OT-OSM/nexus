@@ -62,7 +62,7 @@ Role Variables
 --------------
 
 |**Variables**| **Default Values**| **Type**|
-|----------|---------|---------------|-----------|
+
 nexus_port|nexus_min_memory|nexus_max_memory|nexus_dir_mem_size|nexus_shared_dir
 host_name|nexus_version|nexus_port|nexus_os_user|nexus_os_group|nexus_os_user_shell|nexus_installation_dir|nexus_service_state|
 install.yml|main.yml|RedHat.yml|Ubuntu.yml
