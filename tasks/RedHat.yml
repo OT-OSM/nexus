@@ -1,0 +1,31 @@
+---
+
+- name: Configure service file nexus.service for Rhel 7
+  template:
+    src: nexus.service.j2
+    dest: /usr/lib/systemd/system/nexus.service
+    owner: "{{ nexus_os_user }}"
+    group: "{{ nexus_os_group }}"
+    mode: '0755'
+  when: ansible_distribution_major_version == "7"
+
+- name: Configure service file nexus for Rhel 6
+  template:
+    src: nexus-init.j2
+    dest: /etc/init.d/nexus
+    owner: "{{ nexus_os_user }}"
+    group: "{{ nexus_os_group }}"
+    mode: '0755'
+  when: ansible_distribution_major_version == "6"
+
+- name: Nexus service daemon-reload for rhel 7
+  systemd:
+    name: nexus
+    daemon-reload: yes
+  when: ansible_distribution_major_version == "7"
+
+- name: Enable nexus service on startup
+  service:
+    name: nexus
+    enabled: yes
+    state: "{{ nexus_service_state }}"
