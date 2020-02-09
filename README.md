@@ -1,5 +1,5 @@
 Ansible Role: Nexus
-=====================================
+===================
 An ansible role to install and configure Nexus on Ubuntu, Redhat and CentOS.
 
 Version History
@@ -7,7 +7,7 @@ Version History
 
 |**Date**| **Version**| **Description**| **Changed By** |
 |----------|---------|---------------|-----------------|
-|**6 February 2020** | v.3.20 | |
+|**6 February 2020** | v.3.20 |Updated for CentOS | Abhishek Kapil|
 |**9 APril 2019** | v.3.15 | |
 
 Salient Features
@@ -61,13 +61,16 @@ NEXUS
 Role Variables
 --------------
 
-|**Variables**| **Default Values**| **Type**|
 
-Variable:- nexus_port: 8082|nexus_min_memory: 1200M|nexus_max_memory: 1200M|nexus_dir_mem_size: 2G|nexus_shared_dir: /opt/nexus_shared
-
-Default Values:- host_name: 'host'|nexus_version: '3.20.0-01'|nexus_port: 8082|nexus_os_user: 'nexus'|nexus_os_group: 'nexus'|nexus_os_user_sh                 ell: '/bin/bash'|nexus_installation_dir: '/opt'|nexus_service_state: 'restarted'
-
-Type:- Ubuntu| Redhat | CentOS
+|**Variables**| **Default Values**| **Description**| **Type**|
+|----------|---------|---------------|-----------|
+| nexus_port |8082 | nexus port no. | mandatory |
+| nexus_min_memory | 1200M | Minimum memory required | Mandatory |
+| nexus_max_memory | 1200M | Maximum memory required | Mandatory |
+| nexus_installation_dir | /opt | installation directory for nexus  | Optional |
+| nexus_user | nexus | user for nexus | mandatory |
+| nexus_group | nexus | group for nexus | mandatory |
+|nexus_os_user_shell | /bin/bash| shell used by nexus user | mandatory |
 
  
 Example Playbook
@@ -98,12 +101,13 @@ Future Proposed Changes
 
 
 #References
+-------------
 
-* https://www.vogella.com/tutorials/Nexus/article.html
+* **[Source Code](https://www.vogella.com/tutorials/Nexus/article.html)**
+
+
 
 # Author Information
 
-* mukesh tuteja
-
-* 
+* Abhishek kapil 
 
