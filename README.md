@@ -96,6 +96,10 @@ An inventory should look like this:-
 192.xxx.x.xxx    ansible_user=ubuntu 
 ```
 
+**After the successful installation of jenkins, browse through the jenkins url and you would get your login page**
+![login](./media/login.png)
+
+
 Future Proposed Changes
 -----------------------
 
