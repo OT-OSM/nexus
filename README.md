@@ -103,7 +103,7 @@ An inventory should look like this:-
 #Future Proposed Changes
 -----------------------
 
-* Will make this role compatiblw for Amazon Linux. 
+* Will make this role compatible for Amazon Linux. 
 
 #References
 -------------
