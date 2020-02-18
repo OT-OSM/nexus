@@ -1,4 +1,4 @@
-Ansible Role: Nexus
+osm_nexus
 ===================
 An ansible role to install and configure Nexus on Ubuntu, Redhat and CentOS.
 
@@ -100,9 +100,10 @@ An inventory should look like this:-
 ![login](./media/login.png)
 
 
-Future Proposed Changes
+#Future Proposed Changes
 -----------------------
 
+* Will make this role compatiblw for Amazon Linux. 
 
 #References
 -------------
