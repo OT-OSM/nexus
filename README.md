@@ -8,7 +8,7 @@ Version History
 |**Date**| **Version**| **Description**| **Changed By** |
 |----------|---------|---------------|-----------------|
 |**6 February 2020** | v.2.0 |Updated for CentOS | Abhishek Kapil|
-|**9 APril 2019** | v.1.0 | |
+|**9 April 2019** | v.1.0 | |
 
 Salient Features
 ----------------
