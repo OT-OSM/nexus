@@ -7,8 +7,8 @@ Version History
 
 |**Date**| **Version**| **Description**| **Changed By** |
 |----------|---------|---------------|-----------------|
-|**6 February 2020** | v.3.20 |Updated for CentOS | Abhishek Kapil|
-|**9 APril 2019** | v.3.15 | |
+|**6 February 2020** | v.2.0 |Updated for CentOS | Abhishek Kapil|
+|**9 APril 2019** | v.1.0 | |
 
 Salient Features
 ----------------
@@ -19,9 +19,9 @@ Salient Features
 Supported OS
 ------------
 
-* Ubuntu
-* RHEL
-* CentOS
+* Ubuntu 16 and 18
+* RHEL 6 and 7
+* CentOS 6.10 and 7
 
 Dependencies
 ------------
@@ -81,7 +81,7 @@ Example Playbook
   hosts: server
   become: true
   roles:
-    - role: osm_nexus3.2
+    - role: osm_nexus3
 ...
 
 $  ansible-playbook site.yml -i inventory
