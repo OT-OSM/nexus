@@ -7,8 +7,8 @@ Version History
 
 |**Date**| **Version**| **Description**| **Changed By** |
 |----------|---------|---------------|-----------------|
-|**6 February 2020** | v.2.0 |Updated for CentOS | Abhishek Kapil|
-|**9 April 2019** | v.1.0 | |
+|**6 February 2020** | v.1.0.1 |Created README.md | Abhishek Kapil|
+|**9 April 2019** | v.1.0.0 |Initial commit | Sudipt Sharma |
 
 Salient Features
 ----------------
@@ -109,10 +109,3 @@ An inventory should look like this:-
 -------------
 
 * **[Source Code](https://www.vogella.com/tutorials/Nexus/article.html)**
-
-
-
-# Author Information
-
-* Abhishek kapil 
-

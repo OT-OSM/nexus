@@ -19,6 +19,10 @@
   include: install.yml
   when: is_available.stat.exists == False
 
-- name: Configuring nexus in {{ ansible_distribution }}
-  include: "{{ ansible_distribution }}.yml"
+- name: Including tasks for Ubuntu Family
+  include_tasks: Ubuntu.yml
+  when: ansible_distribution == "Ubuntu"
 
+- name: Including tasks for CentOS Family
+  include_tasks: EL.yml
+  when: ansible_distribution == "Redhat" or ansible_distribution == "CentOS" 
