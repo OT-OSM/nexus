@@ -25,4 +25,8 @@
 
 - name: Including tasks for CentOS Family
   include_tasks: EL.yml
-  when: ansible_distribution == "Redhat" or ansible_distribution == "CentOS" 
+  when: ansible_distribution == "CentOS"
+
+- name: Including tasks for Rhel Family
+  include_tasks: EL.yml
+  when: ansible_distribution == "RedHat"  
