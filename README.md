@@ -7,8 +7,9 @@ Version History
 
 |**Date**| **Version**| **Description**| **Changed By** |
 |----------|---------|---------------|-----------------|
-|**6 February 2020** | v.1.0.1 |Created README.md | Abhishek Kapil|
 |**9 April 2019** | v.1.0.0 |Initial commit | Sudipt Sharma |
+|**6 February 2020** | v.1.0.1 |Created README.md | Abhishek Kapil|
+
 
 Salient Features
 ----------------
