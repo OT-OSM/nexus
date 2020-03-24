@@ -13,5 +13,5 @@ galaxy_info:
   galaxy_tags:
     - nexus
 dependencies:
-  - osm_java
+  - opstree_devops.java
 ...
