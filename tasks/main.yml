@@ -2,7 +2,8 @@
 # tasks file for Nexus role
 
 - name: check Java version
-  shell: java -version 2>&1 | grep version | awk '{print $3}' | awk -F"_" '{print $1}'| sed 's/"//g'
+  raw: java -version 2>&1 | grep version | awk '{print $3}' | awk -F"_" '{print $1}'| sed 's/"//g'
+  changed_when: true
   register: java_version
 
 - name: Print message if correct version of java is not installed
@@ -17,8 +18,16 @@
 
 - name: Installing nexus 3
   include: install.yml
-  when: is_available.stat.exists == False
+  when: not is_available.stat.exists
 
-- name: Configuring nexus in {{ ansible_distribution }}
-  include: "{{ ansible_distribution }}.yml"
+- name: Including tasks for Ubuntu Family
+  include_tasks: Ubuntu.yml
+  when: ansible_distribution == "Ubuntu"
 
+- name: Including tasks for CentOS Family
+  include_tasks: EL.yml
+  when: ansible_distribution == "CentOS"
+
+- name: Including tasks for Rhel Family
+  include_tasks: EL.yml
+  when: ansible_distribution == "RedHat"

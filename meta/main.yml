@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author: sudipt.sharma@opstree.com
+  role_name: nexus
+  description: Install and Setup Nexus.
+  company: "Opstree Solutions"
+  min_ansible_version: 2.3
+  license: license (GPLv2)
+  platforms:
+    - name: RedHat
+    - name: Ubuntu
+    - name: CentOS
+  galaxy_tags:
+    - nexus
+dependencies:
+  - opstree_devops.java
+...

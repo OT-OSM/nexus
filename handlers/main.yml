@@ -4,5 +4,5 @@
 - name: restart nexus
   service:
     name: nexus
-    enabled: yes
+    enabled: true
     state: "{{ nexus_service_state }}"
