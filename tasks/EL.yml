@@ -26,13 +26,13 @@
     mode: '0755'
   when: ansible_distribution_major_version == "6"
 
-- name: Nexus service daemon-reload for Rhel and CentOS 
+- name: Nexus service daemon-reload for Rhel and CentOS
   systemd:
     name: nexus
-    daemon-reload: yes
+    daemon-reload: true
 
 - name: Enable nexus service on startup
   service:
     name: nexus
-    enabled: yes
+    enabled: true
     state: "{{ nexus_service_state }}"

@@ -11,10 +11,10 @@
 - name: Nexus service daemon-reload for Ubuntu
   systemd:
     name: nexus
-    daemon-reload: yes
+    daemon-reload: true
 
 - name: Enable nexus service on startup
   service:
     name: nexus
-    enabled: yes
+    enabled: true
     state: "{{ nexus_service_state }}"
