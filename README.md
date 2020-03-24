@@ -110,3 +110,8 @@ An inventory should look like this:-
 -------------
 
 * **[Source Code](https://www.vogella.com/tutorials/Nexus/article.html)**
+
+# Author
+--------
+
+**[Sudipt Sharma](sudipt.sharma@opstree.com)**
