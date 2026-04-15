@@ -38,6 +38,8 @@
     dest: "/tmp/nexus.tar.gz"
     mode: '0644'
     timeout: 300
+    force: yes
+    validate_certs: no
   register: nexus_download
   retries: 3
   delay: 5
