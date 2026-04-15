@@ -16,7 +16,7 @@ java_xmx: "1g"
 java_max_direct: "1g"
 
 # Nexus Access
-nexus_url: "{{ nexus_url | default('http://localhost:8081') }}"
+nexus_url: "http://localhost:8081"
 nexus_admin_user: "admin"
 new_admin_password: "{{ lookup('env', 'NEXUS_ADMIN_PASSWORD') }}"
 
