@@ -1,0 +1,54 @@
+- name: Get existing roles
+  uri:
+    url: "{{ nexus_url }}/service/rest/v1/security/roles"
+    method: GET
+    user: admin
+    password: "{{ new_admin_password }}"
+    force_basic_auth: yes
+  register: role_list
+
+- name: Create Role
+  uri:
+    url: "{{ nexus_url }}/service/rest/v1/security/roles"
+    method: POST
+    user: admin
+    password: "{{ new_admin_password }}"
+    force_basic_auth: yes
+    body_format: json
+    body:
+      id: ci-cache-read
+      name: CI Cache Read
+      privileges:
+        - nx-repository-view-*-*-read
+        - nx-repository-view-*-*-browse
+      roles: []
+  when: "'ci-cache-read' not in (role_list.json | map(attribute='id') | list)"
+
+# ---------------- USERS ----------------
+- name: Get existing users
+  uri:
+    url: "{{ nexus_url }}/service/rest/v1/security/users"
+    method: GET
+    user: admin
+    password: "{{ new_admin_password }}"
+    force_basic_auth: yes
+  register: user_list
+
+- name: Create BuildPiper User
+  uri:
+    url: "{{ nexus_url }}/service/rest/v1/security/users"
+    method: POST
+    user: admin
+    password: "{{ new_admin_password }}"
+    force_basic_auth: yes
+    body_format: json
+    body:
+      userId: "{{ bp_user }}"
+      password: "{{ bp_password }}"
+      firstName: Build
+      lastName: Piper
+      emailAddress: bp@example.com
+      status: active
+      roles:
+        - ci-cache-read
+  when: bp_user not in (user_list.json | map(attribute='userId') | list)

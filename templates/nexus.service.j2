@@ -1,14 +1,14 @@
 [Unit]
-Description=nexus service
+Description=Nexus Repository Manager
 After=network.target
 
 [Service]
 Type=forking
+User={{ nexus_user }}
+Group={{ nexus_group }}
 LimitNOFILE=65536
-ExecStart={{ nexus_installation_dir }}/nexus-{{ nexus_version }}/bin/nexus start
-ExecStop={{ nexus_installation_dir }}/nexus-{{ nexus_version }}/bin/nexus stop
-User={{ nexus_os_user }}
-Group={{ nexus_os_group }}
+ExecStart={{ nexus_install_dir }}/bin/nexus start
+ExecStop={{ nexus_install_dir }}/bin/nexus stop
 Restart=on-abort
 
 [Install]
