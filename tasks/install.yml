@@ -31,20 +31,34 @@
     create_home: no
     system: yes
 
-# ✅ Download to /tmp (safe like Consul)
 - name: Download Nexus
   become: yes
   get_url:
     url: "{{ nexus_download_url }}"
-    dest: "/tmp/nexus-{{ nexus_version }}.tar.gz"
+    dest: "/tmp/nexus.tar.gz"
     mode: '0644'
     timeout: 300
+  register: nexus_download
+  retries: 3
+  delay: 5
+  until: nexus_download is succeeded
+
+- name: Check Nexus tar exists
+  become: yes
+  stat:
+    path: "/tmp/nexus.tar.gz"
+  register: nexus_tar_stat
+
+- name: Fail if Nexus tar missing
+  fail:
+    msg: "Nexus tar not downloaded!"
+  when: not nexus_tar_stat.stat.exists
 
 # ✅ Extract directly to /opt (NO mv)
 - name: Extract Nexus
   become: yes
   unarchive:
-    src: "/tmp/nexus-{{ nexus_version }}.tar.gz"
+    src: "/tmp/nexus.tar.gz"
     dest: "/opt"
     remote_src: yes
     creates: "/opt/nexus-{{ nexus_version }}"
