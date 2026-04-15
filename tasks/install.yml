@@ -9,23 +9,13 @@
     name: wget
     state: present
 
-# ✅ FIXED DOWNLOAD (IMPORTANT)
+# ✅ DOWNLOAD (reliable)
 - name: Download Nexus using wget
   command: wget --tries=3 --timeout=60 {{ nexus_download_url }} -O /tmp/nexus.tar.gz
   args:
     creates: /tmp/nexus.tar.gz
 
-# ✅ ADD SAFETY CHECK
-- name: Check if Nexus tar exists
-  stat:
-    path: /tmp/nexus.tar.gz
-  register: nexus_tar
-
-- name: Fail if download missing
-  fail:
-    msg: "Nexus download failed!"
-  when: not nexus_tar.stat.exists
-
+# ✅ EXTRACT
 - name: Extract Nexus
   unarchive:
     src: "/tmp/nexus.tar.gz"
@@ -33,6 +23,7 @@
     remote_src: yes
     creates: "/tmp/nexus-{{ nexus_version }}"
 
+# ✅ MOVE BINARIES
 - name: Move Nexus
   command: mv /tmp/nexus-{{ nexus_version }} {{ nexus_install_dir }}
   args:
@@ -43,10 +34,12 @@
   args:
     creates: "{{ nexus_data_dir }}"
 
+# ✅ USER
 - name: Create Nexus user
   user:
     name: "{{ nexus_user }}"
 
+# ✅ PERMISSIONS
 - name: Set ownership
   file:
     path: "{{ item }}"
@@ -57,6 +50,7 @@
     - "{{ nexus_install_dir }}"
     - "{{ nexus_data_dir }}"
 
+# ✅ CONFIG
 - name: Configure nexus.rc
   lineinfile:
     path: "{{ nexus_install_dir }}/bin/nexus.rc"
@@ -77,6 +71,7 @@
       -Xmx{{ java_xmx }}
       -XX:MaxDirectMemorySize={{ java_max_direct }}
 
+# ✅ SERVICE
 - name: Create systemd service
   template:
     src: nexus.service.j2
