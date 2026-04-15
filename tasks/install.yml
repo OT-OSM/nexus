@@ -15,13 +15,14 @@
       - ca-certificates
     state: present
 
-# ✅ Create Nexus user/group (before ownership)
+# ✅ Create Nexus group
 - name: Create Nexus group
   become: yes
   group:
     name: "{{ nexus_group }}"
     system: yes
 
+# ✅ Create Nexus user
 - name: Create Nexus user
   become: yes
   user:
@@ -31,49 +32,25 @@
     create_home: no
     system: yes
 
-- name: Download Nexus
-  become: yes
-  get_url:
-    url: "{{ nexus_download_url }}"
-    dest: "/tmp/nexus.tar.gz"
-    mode: '0644'
-    timeout: 300
-    force: yes
-    validate_certs: no
-  register: nexus_download
-  retries: 3
-  delay: 5
-  until: nexus_download is succeeded
-
-- name: Check Nexus tar exists
-  become: yes
-  stat:
-    path: "/tmp/nexus.tar.gz"
-  register: nexus_tar_stat
-
-- name: Fail if Nexus tar missing
-  fail:
-    msg: "Nexus tar not downloaded!"
-  when: not nexus_tar_stat.stat.exists
-
-# ✅ Extract directly to /opt (NO mv)
+# ✅ Extract (from manually placed file)
 - name: Extract Nexus
   become: yes
   unarchive:
-    src: "/tmp/nexus.tar.gz"
+    src: "/opt/nexus.tar.gz"
     dest: "/opt"
     remote_src: yes
     creates: "/opt/nexus-{{ nexus_version }}"
 
-# ✅ Create symlink (/opt/nexus → version dir)
+# ✅ Create symlink
 - name: Create Nexus symlink
   become: yes
   file:
     src: "/opt/nexus-{{ nexus_version }}"
     dest: "{{ nexus_install_dir }}"
     state: link
+    force: yes
 
-# ✅ Ensure data directory exists
+# ✅ Ensure data directory
 - name: Ensure Nexus data directory
   become: yes
   file:
@@ -95,7 +72,7 @@
     - "/opt/nexus-{{ nexus_version }}"
     - "{{ nexus_data_dir }}"
 
-# ✅ Configure Nexus runtime user
+# ✅ Configure runtime user
 - name: Configure nexus.rc
   become: yes
   lineinfile:
@@ -133,7 +110,7 @@
   become: yes
   command: systemctl daemon-reload
 
-# ✅ Enable & Start Nexus
+# ✅ Start Nexus
 - name: Enable & Start Nexus
   become: yes
   service:
