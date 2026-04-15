@@ -32,15 +32,6 @@
     create_home: no
     system: yes
 
-# ✅ Extract (from manually placed file)
-- name: Extract Nexus
-  become: yes
-  unarchive:
-    src: "/opt/nexus.tar.gz"
-    dest: "/opt"
-    remote_src: yes
-    creates: "/opt/nexus-{{ nexus_version }}"
-
 # ✅ Create symlink
 - name: Create Nexus symlink
   become: yes
