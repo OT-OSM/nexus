@@ -1,3 +1,4 @@
+---
 - name: Install Java
   apt:
     name: "{{ java_package }}"
@@ -6,40 +7,50 @@
 
 - name: Install required packages
   apt:
-    name: wget
+    name:
+      - wget
+      - ca-certificates
     state: present
 
-# ✅ DOWNLOAD (reliable)
-- name: Download Nexus using wget
-  command: wget --tries=3 --timeout=60 {{ nexus_download_url }} -O /tmp/nexus.tar.gz
-  args:
-    creates: /tmp/nexus.tar.gz
+# :white_check_mark: Use get_url instead of command: wget
+# It handles retries, validation, and error reporting much better
+- name: Download Nexus
+  get_url:
+    url: "{{ nexus_download_url }}"
+    dest: "/tmp/nexus.tar.gz"
+    mode: '0644'
+    timeout: 60
+  register: download_result
+  until: download_result is succeeded
+  retries: 3
 
-# ✅ EXTRACT
+# This is much safer than manual 'mv' commands
+- name: Ensure Nexus extraction directory exists
+  file:
+    path: "/tmp/nexus-extract"
+    state: directory
+
 - name: Extract Nexus
   unarchive:
     src: "/tmp/nexus.tar.gz"
-    dest: "/tmp/"
+    dest: "/tmp/nexus-extract"
     remote_src: yes
-    creates: "/tmp/nexus-{{ nexus_version }}"
+    creates: "/tmp/nexus-extract/nexus-{{ nexus_version }}"
 
-# ✅ MOVE BINARIES
-- name: Move Nexus
-  command: mv /tmp/nexus-{{ nexus_version }} {{ nexus_install_dir }}
+- name: Move Nexus to install directory
+  command: "mv /tmp/nexus-extract/nexus-{{ nexus_version }} {{ nexus_install_dir }}"
   args:
     creates: "{{ nexus_install_dir }}"
 
-- name: Move sonatype-work
-  command: mv /tmp/sonatype-work {{ nexus_data_dir }}
+- name: Move sonatype-work to data directory
+  command: "mv /tmp/nexus-extract/sonatype-work {{ nexus_data_dir }}"
   args:
     creates: "{{ nexus_data_dir }}"
 
-# ✅ USER
 - name: Create Nexus user
   user:
     name: "{{ nexus_user }}"
 
-# ✅ PERMISSIONS
 - name: Set ownership
   file:
     path: "{{ item }}"
@@ -50,7 +61,6 @@
     - "{{ nexus_install_dir }}"
     - "{{ nexus_data_dir }}"
 
-# ✅ CONFIG
 - name: Configure nexus.rc
   lineinfile:
     path: "{{ nexus_install_dir }}/bin/nexus.rc"
@@ -71,7 +81,6 @@
       -Xmx{{ java_xmx }}
       -XX:MaxDirectMemorySize={{ java_max_direct }}
 
-# ✅ SERVICE
 - name: Create systemd service
   template:
     src: nexus.service.j2
