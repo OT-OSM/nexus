@@ -12,45 +12,61 @@
       - ca-certificates
     state: present
 
-# :white_check_mark: Use get_url instead of command: wget
-# It handles retries, validation, and error reporting much better
+# ✅ Clean old download (avoid partial file issues)
+- name: Remove old Nexus tar
+  file:
+    path: /opt/nexus.tar.gz
+    state: absent
+
+# ✅ Download Nexus (reliable)
 - name: Download Nexus
   get_url:
     url: "{{ nexus_download_url }}"
-    dest: "/tmp/nexus.tar.gz"
+    dest: "/opt/nexus.tar.gz"
     mode: '0644'
-    timeout: 60
+    timeout: 300
   register: download_result
-  until: download_result is succeeded
   retries: 3
+  delay: 5
+  until: download_result is succeeded
 
-# This is much safer than manual 'mv' commands
+# ✅ Create extraction directory (stable location)
 - name: Ensure Nexus extraction directory exists
   file:
-    path: "/tmp/nexus-extract"
+    path: "/opt/nexus-extract"
     state: directory
+    mode: '0755'
+    owner: root
+    group: root
 
+# ✅ Extract Nexus
 - name: Extract Nexus
   unarchive:
-    src: "/tmp/nexus.tar.gz"
-    dest: "/tmp/nexus-extract"
+    src: "/opt/nexus.tar.gz"
+    dest: "/opt/nexus-extract"
     remote_src: yes
-    creates: "/tmp/nexus-extract/nexus-{{ nexus_version }}"
+    creates: "/opt/nexus-extract/nexus-{{ nexus_version }}"
 
+# ✅ Move Nexus binaries
 - name: Move Nexus to install directory
-  command: "mv /tmp/nexus-extract/nexus-{{ nexus_version }} {{ nexus_install_dir }}"
+  command: "mv /opt/nexus-extract/nexus-{{ nexus_version }} {{ nexus_install_dir }}"
   args:
     creates: "{{ nexus_install_dir }}"
 
+# ✅ Move data directory
 - name: Move sonatype-work to data directory
-  command: "mv /tmp/nexus-extract/sonatype-work {{ nexus_data_dir }}"
+  command: "mv /opt/nexus-extract/sonatype-work {{ nexus_data_dir }}"
   args:
     creates: "{{ nexus_data_dir }}"
 
+# ✅ Create Nexus user
 - name: Create Nexus user
   user:
     name: "{{ nexus_user }}"
+    shell: /bin/bash
+    create_home: yes
 
+# ✅ Set ownership
 - name: Set ownership
   file:
     path: "{{ item }}"
@@ -61,18 +77,21 @@
     - "{{ nexus_install_dir }}"
     - "{{ nexus_data_dir }}"
 
+# ✅ Configure Nexus runtime user
 - name: Configure nexus.rc
   lineinfile:
     path: "{{ nexus_install_dir }}/bin/nexus.rc"
     line: 'run_as_user="{{ nexus_user }}"'
     create: yes
 
+# ✅ Fix shell compatibility
 - name: Fix shell
   replace:
     path: "{{ nexus_install_dir }}/bin/nexus"
     regexp: '^#!/bin/sh'
     replace: '#!/bin/bash'
 
+# ✅ Configure JVM
 - name: Configure JVM
   blockinfile:
     path: "{{ nexus_install_dir }}/bin/nexus.vmoptions"
@@ -81,14 +100,17 @@
       -Xmx{{ java_xmx }}
       -XX:MaxDirectMemorySize={{ java_max_direct }}
 
+# ✅ Create systemd service
 - name: Create systemd service
   template:
     src: nexus.service.j2
     dest: /etc/systemd/system/nexus.service
 
+# ✅ Reload systemd
 - name: Reload systemd
   command: systemctl daemon-reload
 
+# ✅ Enable & Start Nexus
 - name: Enable & Start Nexus
   service:
     name: nexus
