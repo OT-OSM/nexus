@@ -11,21 +11,21 @@
       - curl
     state: present
 
-# ✅ Ensure /opt exists
+#  Ensure /opt exists
 - name: Ensure /opt directory exists
   file:
     path: /opt
     state: directory
     mode: '0755'
 
-# ✅ Download Nexus directly on TARGET (fix for your issue)
+#  Download Nexus only if not exists
 - name: Download Nexus
   command: >
     curl -L -o /opt/nexus.tar.gz {{ nexus_download_url }}
   args:
     creates: /opt/nexus.tar.gz
 
-# ✅ Validate download
+#  Validate download
 - name: Check Nexus tar exists
   stat:
     path: /opt/nexus.tar.gz
@@ -36,64 +36,65 @@
     msg: "Nexus tar file not downloaded!"
   when: not nexus_tar.stat.exists
 
-# ✅ Extract Nexus
+#  Extract ONLY if not already extracted
 - name: Extract Nexus
   unarchive:
     src: /opt/nexus.tar.gz
     dest: /opt/
     remote_src: yes
+    creates: "/opt/nexus-{{ nexus_version }}"
 
-# ✅ Move Nexus directory
+#  Move Nexus directory (only once)
 - name: Move Nexus
   command: mv /opt/nexus-{{ nexus_version }} {{ nexus_install_dir }}
   args:
     creates: "{{ nexus_install_dir }}"
 
-# ✅ Move sonatype-work
+#  Move sonatype-work (only once)
 - name: Move sonatype-work
   command: mv /opt/sonatype-work {{ nexus_data_dir }}
   args:
     creates: "{{ nexus_data_dir }}"
 
-# ✅ Create Nexus user
+#  Create Nexus user
 - name: Create Nexus user
   user:
     name: "{{ nexus_user }}"
     shell: /bin/bash
     create_home: yes
 
-# ✅ Ensure group exists
+#  Ensure group exists
 - name: Ensure Nexus group exists
   group:
     name: "{{ nexus_group }}"
     state: present
 
-# ✅ Set ownership
+#  Set ownership (idempotent version)
 - name: Set ownership
   file:
     path: "{{ item }}"
     owner: "{{ nexus_user }}"
     group: "{{ nexus_group }}"
-    recurse: yes
+    state: directory
   loop:
     - "{{ nexus_install_dir }}"
     - "{{ nexus_data_dir }}"
 
-# ✅ Configure nexus.rc
+#  Configure nexus.rc
 - name: Configure nexus.rc
   lineinfile:
     path: "{{ nexus_install_dir }}/bin/nexus.rc"
     line: 'run_as_user="{{ nexus_user }}"'
     create: yes
 
-# ✅ Fix shell
+#  Fix shell (idempotent)
 - name: Fix shell
   replace:
     path: "{{ nexus_install_dir }}/bin/nexus"
     regexp: '^#!/bin/sh'
     replace: '#!/bin/bash'
 
-# ✅ Configure JVM
+#  Configure JVM
 - name: Configure JVM
   blockinfile:
     path: "{{ nexus_install_dir }}/bin/nexus.vmoptions"
@@ -102,17 +103,14 @@
       -Xmx{{ java_xmx }}
       -XX:MaxDirectMemorySize={{ java_max_direct }}
 
-# ✅ Create systemd service
+#  Create systemd service (with handler)
 - name: Create systemd service
   template:
     src: nexus.service.j2
     dest: /etc/systemd/system/nexus.service
+  notify: Reload systemd
 
-# ✅ Reload systemd
-- name: Reload systemd
-  command: systemctl daemon-reload
-
-# ✅ Enable & Start Nexus
+#  Enable & Start Nexus (idempotent)
 - name: Enable & Start Nexus
   service:
     name: nexus
