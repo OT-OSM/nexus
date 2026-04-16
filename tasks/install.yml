@@ -1,79 +1,78 @@
----
-
 - name: Install Java
-  become: yes
   apt:
     name: "{{ java_package }}"
     state: present
     update_cache: yes
 
 - name: Install required packages
-  become: yes
   apt:
-    name:
-      - wget
-      - ca-certificates
+    name: wget
     state: present
 
-# ✅ Create Nexus group
-- name: Create Nexus group
-  become: yes
-  group:
-    name: "{{ nexus_group }}"
-    system: yes
+# ✅ Download to stable location (NOT /tmp)
+- name: Download Nexus
+  get_url:
+    url: "{{ nexus_download_url }}"
+    dest: "/opt/nexus.tar.gz"
+    mode: '0644'
+
+# ✅ Validate download (very important)
+- name: Check if Nexus tar exists
+  stat:
+    path: "/opt/nexus.tar.gz"
+  register: nexus_tar
+
+- name: Fail if Nexus tar not found
+  fail:
+    msg: "Nexus tar file not downloaded!"
+  when: not nexus_tar.stat.exists
+
+# ✅ Extract Nexus
+- name: Extract Nexus
+  unarchive:
+    src: "/opt/nexus.tar.gz"
+    dest: "/opt/"
+    remote_src: yes
+
+# ✅ Move Nexus directory
+- name: Move Nexus
+  command: mv /opt/nexus-{{ nexus_version }} {{ nexus_install_dir }}
+  args:
+    creates: "{{ nexus_install_dir }}"
+
+# ✅ Move sonatype-work
+- name: Move sonatype-work
+  command: mv /opt/sonatype-work {{ nexus_data_dir }}
+  args:
+    creates: "{{ nexus_data_dir }}"
 
 # ✅ Create Nexus user
 - name: Create Nexus user
-  become: yes
   user:
     name: "{{ nexus_user }}"
-    group: "{{ nexus_group }}"
     shell: /bin/bash
-    create_home: no
-    system: yes
-
-# ✅ Create symlink
-- name: Create Nexus symlink
-  become: yes
-  file:
-    src: "/opt/nexus-{{ nexus_version }}"
-    dest: "{{ nexus_install_dir }}"
-    state: link
-    force: yes
-
-# ✅ Ensure data directory
-- name: Ensure Nexus data directory
-  become: yes
-  file:
-    path: "{{ nexus_data_dir }}"
-    state: directory
-    owner: "{{ nexus_user }}"
-    group: "{{ nexus_group }}"
-    mode: '0755'
+    create_home: yes
 
 # ✅ Set ownership
 - name: Set ownership
-  become: yes
   file:
     path: "{{ item }}"
     owner: "{{ nexus_user }}"
     group: "{{ nexus_group }}"
     recurse: yes
   loop:
-    - "/opt/nexus-{{ nexus_version }}"
+    - "{{ nexus_install_dir }}"
     - "{{ nexus_data_dir }}"
 
-# ✅ Configure runtime user
+# ✅ Configure nexus.rc
 - name: Configure nexus.rc
-  become: yes
   lineinfile:
     path: "{{ nexus_install_dir }}/bin/nexus.rc"
     line: 'run_as_user="{{ nexus_user }}"'
     create: yes
 
-# ✅ Fix shell
+# ✅ Fix shell issue
 - name: Fix shell
-  become: yes
   replace:
     path: "{{ nexus_install_dir }}/bin/nexus"
     regexp: '^#!/bin/sh'
@@ -81,7 +80,6 @@
 
 # ✅ Configure JVM
 - name: Configure JVM
-  become: yes
   blockinfile:
     path: "{{ nexus_install_dir }}/bin/nexus.vmoptions"
     block: |
@@ -91,19 +89,16 @@
 
 # ✅ Create systemd service
 - name: Create systemd service
-  become: yes
   template:
     src: nexus.service.j2
     dest: /etc/systemd/system/nexus.service
 
 # ✅ Reload systemd
 - name: Reload systemd
-  become: yes
   command: systemctl daemon-reload
 
-# ✅ Start Nexus
+# ✅ Enable & Start Nexus
 - name: Enable & Start Nexus
-  become: yes
   service:
     name: nexus
     state: started
