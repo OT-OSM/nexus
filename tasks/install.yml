@@ -6,135 +6,69 @@
 
 - name: Install required packages
   apt:
-    name: wget
+    name:
+      - wget
+      - curl
     state: present
 
-# ===============================
-# 🔍 DEBUG: Who am I running as?
-# ===============================
-- name: Debug current user
-  command: whoami
-  register: current_user
+# ✅ Ensure /opt exists
+- name: Ensure /opt directory exists
+  file:
+    path: /opt
+    state: directory
+    mode: '0755'
 
-- debug:
-    var: current_user.stdout
-
-# ===============================
-# 🔍 DEBUG: Check /opt permissions
-# ===============================
-- name: Check /opt permissions
-  command: ls -ld /opt
-  register: opt_perm
-
-- debug:
-    var: opt_perm.stdout
-
-# ===============================
-# 🔽 Download Nexus
-# ===============================
+# ✅ Download Nexus directly on TARGET (fix for your issue)
 - name: Download Nexus
-  get_url:
-    url: "{{ nexus_download_url }}"
-    dest: "/opt/nexus.tar.gz"
-    mode: '0644'
-  register: download_output
+  command: >
+    curl -L -o /opt/nexus.tar.gz {{ nexus_download_url }}
+  args:
+    creates: /opt/nexus.tar.gz
 
-- name: Show download result
-  debug:
-    var: download_output
-
-# ===============================
-# 🔍 Verify file exists
-# ===============================
-- name: Check if Nexus tar exists
+# ✅ Validate download
+- name: Check Nexus tar exists
   stat:
-    path: "/opt/nexus.tar.gz"
+    path: /opt/nexus.tar.gz
   register: nexus_tar
 
-- name: Show Nexus tar status
-  debug:
-    var: nexus_tar
-
-# ===============================
-# 🔍 Check file size
-# ===============================
-- name: Check Nexus file size
-  command: ls -lh /opt/nexus.tar.gz
-  register: nexus_size
-  ignore_errors: yes
-
-- debug:
-    var: nexus_size.stdout
-
-# ===============================
-# 🔍 List /opt directory
-# ===============================
-- name: List /opt directory
-  command: ls -lh /opt
-  register: opt_list
-
-- debug:
-    var: opt_list.stdout
-
-# ===============================
-# ❌ Fail if file missing
-# ===============================
 - name: Fail if Nexus tar not found
   fail:
     msg: "Nexus tar file not downloaded!"
   when: not nexus_tar.stat.exists
 
-# ===============================
-# 🔄 Extract Nexus
-# ===============================
+# ✅ Extract Nexus
 - name: Extract Nexus
   unarchive:
-    src: "/opt/nexus.tar.gz"
-    dest: "/opt/"
+    src: /opt/nexus.tar.gz
+    dest: /opt/
     remote_src: yes
-  register: extract_output
 
-- debug:
-    var: extract_output
-
-# ===============================
-# 🔍 Check extracted folder
-# ===============================
-- name: Check extracted Nexus directory
-  command: ls -lh /opt
-  register: extract_check
-
-- debug:
-    var: extract_check.stdout
-
-# ===============================
-# Move Nexus directory
-# ===============================
+# ✅ Move Nexus directory
 - name: Move Nexus
   command: mv /opt/nexus-{{ nexus_version }} {{ nexus_install_dir }}
   args:
     creates: "{{ nexus_install_dir }}"
 
-# ===============================
-# Move sonatype-work
-# ===============================
+# ✅ Move sonatype-work
 - name: Move sonatype-work
   command: mv /opt/sonatype-work {{ nexus_data_dir }}
   args:
     creates: "{{ nexus_data_dir }}"
 
-# ===============================
-# Create Nexus user
-# ===============================
+# ✅ Create Nexus user
 - name: Create Nexus user
   user:
     name: "{{ nexus_user }}"
     shell: /bin/bash
     create_home: yes
 
-# ===============================
-# Set ownership
-# ===============================
+# ✅ Ensure group exists
+- name: Ensure Nexus group exists
+  group:
+    name: "{{ nexus_group }}"
+    state: present
+
+# ✅ Set ownership
 - name: Set ownership
   file:
     path: "{{ item }}"
@@ -145,27 +79,21 @@
     - "{{ nexus_install_dir }}"
     - "{{ nexus_data_dir }}"
 
-# ===============================
-# Configure nexus.rc
-# ===============================
+# ✅ Configure nexus.rc
 - name: Configure nexus.rc
   lineinfile:
     path: "{{ nexus_install_dir }}/bin/nexus.rc"
     line: 'run_as_user="{{ nexus_user }}"'
     create: yes
 
-# ===============================
-# Fix shell
-# ===============================
+# ✅ Fix shell
 - name: Fix shell
   replace:
     path: "{{ nexus_install_dir }}/bin/nexus"
     regexp: '^#!/bin/sh'
     replace: '#!/bin/bash'
 
-# ===============================
-# Configure JVM
-# ===============================
+# ✅ Configure JVM
 - name: Configure JVM
   blockinfile:
     path: "{{ nexus_install_dir }}/bin/nexus.vmoptions"
@@ -174,23 +102,17 @@
       -Xmx{{ java_xmx }}
       -XX:MaxDirectMemorySize={{ java_max_direct }}
 
-# ===============================
-# Create systemd service
-# ===============================
+# ✅ Create systemd service
 - name: Create systemd service
   template:
     src: nexus.service.j2
     dest: /etc/systemd/system/nexus.service
 
-# ===============================
-# Reload systemd
-# ===============================
+# ✅ Reload systemd
 - name: Reload systemd
   command: systemctl daemon-reload
 
-# ===============================
-# Start Nexus
-# ===============================
+# ✅ Enable & Start Nexus
 - name: Enable & Start Nexus
   service:
     name: nexus
