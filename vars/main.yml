@@ -1,0 +1,30 @@
+java_package: ""
+
+nexus_version: ""
+nexus_download_url: ""
+
+nexus_install_dir: ""
+nexus_data_dir: ""
+
+nexus_user: ""
+nexus_group: ""
+
+nexus_port: ""
+
+java_xms: ""
+java_xmx: ""
+java_max_direct: ""
+
+# Nexus Access
+nexus_url: ""
+nexus_admin_user: ""
+new_admin_password: ""
+
+# BuildPiper User
+bp_user: ""
+bp_password: ""
+
+# Repositories
+maven_proxy_repo: ""
+npm_proxy_repo: ""
+docker_proxy_repo: ""
