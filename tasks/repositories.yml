@@ -24,7 +24,7 @@
         blobStoreName: default
         strictContentTypeValidation: true
       proxy:
-        remoteUrl: https://repo1.maven.org/maven2/
+        remoteUrl: "{{ maven_remote_url }}"
         contentMaxAge: 1440
         metadataMaxAge: 1440
       negativeCache:
@@ -55,7 +55,7 @@
         blobStoreName: default
         strictContentTypeValidation: true
       proxy:
-        remoteUrl: https://registry.npmjs.org
+        remoteUrl: "{{ npm_remote_url }}"
         contentMaxAge: 1440
         metadataMaxAge: 1440
       negativeCache:
@@ -83,7 +83,7 @@
         blobStoreName: default
         strictContentTypeValidation: true
       proxy:
-        remoteUrl: https://registry-1.docker.io
+        remoteUrl: "{{ docker_remote_url }}"
         contentMaxAge: 1440
         metadataMaxAge: 1440
       negativeCache:
