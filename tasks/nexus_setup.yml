@@ -7,26 +7,26 @@
   delay: 10
   until: nexus_status.status == 200
 
-# 🔍 Check if admin.password exists (fresh install case)
+# Checking if admin.password exists (fresh install case)
 - name: Check if admin password file exists
   stat:
     path: "{{ nexus_data_dir }}/nexus3/admin.password"
   register: password_file
 
-# 📥 Read password only if file exists
+# Read password only if file exists
 - name: Read admin password
   slurp:
     src: "{{ nexus_data_dir }}/nexus3/admin.password"
   register: nexus_admin_password
   when: password_file.stat.exists
 
-# 🔐 Decode password
+#  Decode password
 - name: Decode password
   set_fact:
     initial_admin_password: "{{ nexus_admin_password.content | b64decode | trim }}"
   when: password_file.stat.exists
 
-# 🔎 Check if password already updated (for idempotency)
+# Check if password already updated (for idempotency)
 - name: Check if admin password already updated
   uri:
     url: "{{ nexus_url }}/service/rest/v1/security/users/admin"
@@ -38,14 +38,14 @@
   register: admin_check
   failed_when: false
 
-# 🔄 Change password ONLY if:
+#  Change password ONLY if:
 # 1. It's fresh install (file exists)
 # 2. Password not already updated
 - name: Change admin password
   uri:
     url: "{{ nexus_url }}/service/rest/v1/security/users/admin/change-password"
     method: PUT
-    user: "admin"
+    user: "{{ nexus_admin_user }}"
     password: "{{ initial_admin_password }}"
     force_basic_auth: yes
     headers:
