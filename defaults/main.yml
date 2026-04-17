@@ -40,3 +40,8 @@ nexus_user_roles:
 maven_proxy_repo: ""
 npm_proxy_repo: ""
 docker_proxy_repo: ""
+
+# Remote URLs
+maven_remote_url: ""
+npm_remote_url: ""
+docker_remote_url: ""
