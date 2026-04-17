@@ -20,9 +20,21 @@ nexus_url: ""
 nexus_admin_user: ""
 new_admin_password: ""
 
-# BuildPiper User
-bp_user: ""
-bp_password: ""
+nexus_role_id: ""
+nexus_role_name: ""
+nexus_role_privileges:
+  - nx-repository-view-*-*-read
+  - nx-repository-view-*-*-browse
+nexus_role_inherited: []
+
+# User
+nexus_user_id: ""
+nexus_user_password: ""
+nexus_user_firstname: ""
+nexus_user_lastname: ""
+nexus_user_email: ""
+nexus_user_roles:
+  - ""
 
 # Repositories
 maven_proxy_repo: ""
