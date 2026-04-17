@@ -1,0 +1,7 @@
+---
+- name: Test Nexus Role
+  hosts: all
+  become: yes
+  
+  roles:
+    - nexus
