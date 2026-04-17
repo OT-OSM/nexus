@@ -1,4 +1,11 @@
-- include_tasks: install.yml
-- include_tasks: nexus_setup.yml
-- include_tasks: repositories.yml
-- include_tasks: rbac.yml
+- name: Install and configure Nexus binaries
+  include_tasks: install.yml
+
+- name: Perform Nexus initial setup (API, password)
+  include_tasks: nexus_setup.yml
+
+- name: Configure Nexus repositories
+  include_tasks: repositories.yml
+
+- name: Configure Nexus RBAC (roles and users)
+  include_tasks: rbac.yml
