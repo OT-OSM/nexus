@@ -1,31 +1,30 @@
-java_package: "openjdk-17-jdk"
+java_package: ""
 
-nexus_version: "3.78.2-04"
-nexus_download_url: "https://download.sonatype.com/nexus/3/nexus-unix-x86-64-{{ nexus_version }}.tar.gz"
+nexus_version: ""
+nexus_download_url: ""
 
-nexus_install_dir: "/opt/nexus"
-nexus_data_dir: "/opt/sonatype-work"
+nexus_install_dir: ""
+nexus_data_dir: ""
 
-nexus_user: "nexus"
-nexus_group: "nexus"
+nexus_user: ""
+nexus_group: ""
 
-nexus_port: 8081
+nexus_port: ""
 
-java_xms: "1g"
-java_xmx: "1g"
-java_max_direct: "1g"
+java_xms: ""
+java_xmx: ""
+java_max_direct: ""
 
 # Nexus Access
-nexus_url: "http://localhost:8081"
-nexus_admin_user: "admin"
-new_admin_password: "{{ lookup('env', 'NEXUS_ADMIN_PASSWORD') }}"
-
+nexus_url: ""
+nexus_admin_user: ""
+new_admin_password: ""
 
 # BuildPiper User
-bp_user: "bp-user"
-bp_password: "{{ lookup('env', 'BP_PASSWORD') }}"
+bp_user: ""
+bp_password: ""
 
 # Repositories
-maven_proxy_repo: "maven-central"
-npm_proxy_repo: "npm-proxy"
-docker_proxy_repo: "docker-proxy"
+maven_proxy_repo: ""
+npm_proxy_repo: ""
+docker_proxy_repo: ""
