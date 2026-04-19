@@ -1,27 +1,38 @@
-java_package: ""
 
-nexus_version: ""
-nexus_download_url: ""
 
-nexus_install_dir: ""
-nexus_data_dir: ""
+nexus_version: "3.78.2-04"
+nexus_download_url: "https://download.sonatype.com/nexus/3/nexus-unix-x86-64-{{ nexus_version }}.tar.gz"
 
-nexus_user: ""
-nexus_group: ""
+# Base directory
+nexus_base_dir: "/opt"
 
-nexus_port: ""
+# Temporary archive path
+nexus_tmp_archive: "{{ nexus_base_dir }}/nexus.tar.gz"
 
-java_xms: ""
-java_xmx: ""
-java_max_direct: ""
+# Shell (OS portable)
+nexus_shell: "/bin/bash"
+
+nexus_install_dir: "/opt/nexus"
+nexus_data_dir: "/opt/sonatype-work"
+
+nexus_user: "nexus"
+nexus_group: "nexus"
+
+nexus_port: 8081
+
+java_xms: "1g"
+java_xmx: "1g"
+java_max_direct: "1g"
 
 # Nexus Access
-nexus_url: ""
+nexus_url: "http://localhost:8081"
 nexus_admin_user: ""
 new_admin_password: ""
 
-nexus_role_id: ""
-nexus_role_name: ""
+
+# Role
+nexus_role_id: "ci-cache-read"
+nexus_role_name: "CI Cache Read"
 nexus_role_privileges:
   - nx-repository-view-*-*-read
   - nx-repository-view-*-*-browse
@@ -34,14 +45,14 @@ nexus_user_firstname: ""
 nexus_user_lastname: ""
 nexus_user_email: ""
 nexus_user_roles:
-  - ""
+  - "{{ nexus_role_id }}"
 
 # Repositories
-maven_proxy_repo: ""
-npm_proxy_repo: ""
-docker_proxy_repo: ""
+maven_proxy_repo: "maven-central"
+npm_proxy_repo: "npm-proxy"
+docker_proxy_repo: "docker-proxy"
 
-# Remote URLs
-maven_remote_url: ""
-npm_remote_url: ""
-docker_remote_url: ""
+# Remote URL's
+maven_remote_url: "https://repo1.maven.org/maven2/"
+npm_remote_url: "https://registry.npmjs.org"
+docker_remote_url: "https://registry-1.docker.io"
