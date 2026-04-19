@@ -1,34 +1,21 @@
-# ---------------- PRE-CHECK ----------------
-- name: Check if curl is available
-  command: which curl
-  register: curl_check
-  changed_when: false
-  failed_when: curl_check.rc != 0
-
-
-# ---------------- DIRECTORIES ----------------
-- name: Ensure base directory exists
+# Ensure /opt exists
+- name: Ensure /opt directory exists
   file:
-    path: "{{ nexus_base_dir }}"
+    path: /opt
     state: directory
     mode: '0755'
 
-
-# ---------------- DOWNLOAD ----------------
-- name: Download Nexus using curl
+# Download Nexus only if not exists
+- name: Download Nexus
   command: >
-    curl -fL "{{ nexus_download_url }}" -o {{ nexus_tmp_archive }}
+    curl -L -o /opt/nexus.tar.gz {{ nexus_download_url }}
   args:
-    creates: "{{ nexus_tmp_archive }}"
-  environment:
-    http_proxy: "{{ http_proxy | default(omit) }}"
-    https_proxy: "{{ https_proxy | default(omit) }}"
+    creates: /opt/nexus.tar.gz
 
-
-# ---------------- VALIDATE ----------------
+# Validate download
 - name: Check Nexus tar exists
   stat:
-    path: "{{ nexus_tmp_archive }}"
+    path: /opt/nexus.tar.gz
   register: nexus_tar
 
 - name: Fail if Nexus tar not found
@@ -36,71 +23,65 @@
     msg: "Nexus tar file not downloaded!"
   when: not nexus_tar.stat.exists
 
-
-# ---------------- EXTRACT ----------------
+# Extract ONLY if not already extracted
 - name: Extract Nexus
   unarchive:
-    src: "{{ nexus_tmp_archive }}"
-    dest: "{{ nexus_base_dir }}/"
+    src: /opt/nexus.tar.gz
+    dest: /opt/
     remote_src: yes
-    creates: "{{ nexus_base_dir }}/nexus-{{ nexus_version }}"
+    creates: "/opt/nexus-{{ nexus_version }}"
 
-
-# ---------------- MOVE DIRECTORIES ----------------
-- name: Move Nexus directory
-  command: >
-    mv {{ nexus_base_dir }}/nexus-{{ nexus_version }} {{ nexus_install_dir }}
+# Move Nexus directory (only once)
+- name: Move Nexus
+  command: mv /opt/nexus-{{ nexus_version }} {{ nexus_install_dir }}
   args:
     creates: "{{ nexus_install_dir }}"
 
+# Move sonatype-work (only once)
 - name: Move sonatype-work
-  command: >
-    mv {{ nexus_base_dir }}/sonatype-work {{ nexus_data_dir }}
+  command: mv /opt/sonatype-work {{ nexus_data_dir }}
   args:
     creates: "{{ nexus_data_dir }}"
 
+# Create Nexus user
+- name: Create Nexus user
+  user:
+    name: "{{ nexus_user }}"
+    shell: /bin/bash
+    create_home: yes
 
-# ---------------- USER & GROUP ----------------
+# Ensure group exists
 - name: Ensure Nexus group exists
   group:
     name: "{{ nexus_group }}"
     state: present
 
-- name: Create Nexus user
-  user:
-    name: "{{ nexus_user }}"
-    group: "{{ nexus_group }}"
-    shell: "{{ nexus_shell }}"
-    create_home: yes
-
-
-# ---------------- PERMISSIONS ----------------
+# Set ownership (idempotent version)
 - name: Set ownership
   file:
     path: "{{ item }}"
     owner: "{{ nexus_user }}"
     group: "{{ nexus_group }}"
-    recurse: yes
+    state: directory
   loop:
     - "{{ nexus_install_dir }}"
     - "{{ nexus_data_dir }}"
 
-
-# ---------------- CONFIGURATION ----------------
+# Configure nexus.rc
 - name: Configure nexus.rc
   lineinfile:
     path: "{{ nexus_install_dir }}/bin/nexus.rc"
     line: 'run_as_user="{{ nexus_user }}"'
     create: yes
 
-- name: Fix shell (optional)
+# Fix shell (idempotent)
+- name: Fix shell
   replace:
     path: "{{ nexus_install_dir }}/bin/nexus"
     regexp: '^#!/bin/sh'
-    replace: '#!{{ nexus_shell }}'
-  when: nexus_shell is defined
+    replace: '#!/bin/bash'
 
-
+# Configure JVM
 - name: Configure JVM
   blockinfile:
     path: "{{ nexus_install_dir }}/bin/nexus.vmoptions"
@@ -109,19 +90,16 @@
       -Xmx{{ java_xmx }}
       -XX:MaxDirectMemorySize={{ java_max_direct }}
 
-
-# ---------------- SYSTEMD ----------------
+# Create systemd service (with handler)
 - name: Create systemd service
   template:
     src: nexus.service.j2
     dest: /etc/systemd/system/nexus.service
-  when: ansible_service_mgr == "systemd"
   notify: Reload systemd
 
-
+# Enable & Start Nexus (idempotent)
 - name: Enable & Start Nexus
   service:
     name: nexus
     state: started
     enabled: yes
-  when: ansible_service_mgr == "systemd"
