@@ -27,7 +27,7 @@ java_max_direct: "1g"
 # Nexus Access
 nexus_url: "http://localhost:8081"
 nexus_admin_user: ""
-new_admin_password: ""
+new_admin_password: "{{ lookup('env', 'NEXUS_ADMIN_PASSWORD') }}"
 
 
 # Role
@@ -40,7 +40,7 @@ nexus_role_inherited: []
 
 # User
 nexus_user_id: ""
-nexus_user_password: ""
+nexus_user_password: "{{ lookup('env', 'BP_PASSWORD') }}"
 nexus_user_firstname: ""
 nexus_user_lastname: ""
 nexus_user_email: ""
