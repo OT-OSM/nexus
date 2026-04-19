@@ -1,6 +1,4 @@
-- debug:
-    msg: "User={{ nexus_admin_user }}, Password={{ new_admin_password }}"
-    
+   
 # ---------------- ROLES ----------------
 - name: Get existing roles
   uri:
