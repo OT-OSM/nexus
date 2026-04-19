@@ -73,7 +73,7 @@
     path: "{{ item }}"
     owner: "{{ nexus_user }}"
     group: "{{ nexus_group }}"
-    recurse: true
+    state: directory
   loop:
     - "{{ nexus_install_dir }}"
     - "{{ nexus_data_dir }}"
@@ -92,18 +92,12 @@
     path: "{{ nexus_install_dir }}/bin/nexus"
     regexp: '^#!/bin/sh'
     replace: '#!{{ nexus_shell }}'
-  when: nexus_shell is defined
-
-
-- name: Ensure nexus.vmoptions exists
-  file:
-    path: "{{ nexus_install_dir }}/bin/nexus.vmoptions"
-    state: touch
 
 
 - name: Configure JVM
   blockinfile:
     path: "{{ nexus_install_dir }}/bin/nexus.vmoptions"
+    marker: "# {mark} ANSIBLE MANAGED JVM"
     block: |
       -Xms{{ java_xms }}
       -Xmx{{ java_xmx }}
@@ -115,8 +109,8 @@
   template:
     src: nexus.service.j2
     dest: "{{ nexus_systemd_path }}/{{ nexus_service_name }}.service"
-  when: ansible_service_mgr == "systemd"
   notify: Reload systemd
+  when: ansible_service_mgr == "systemd"
 
 
 - name: Enable & Start Nexus
