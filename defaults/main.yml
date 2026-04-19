@@ -1,46 +1,37 @@
-# Directory & paths
+# ---------------- PATHS ----------------
 nexus_base_dir: "/opt"
 nexus_tmp_archive: "{{ nexus_base_dir }}/nexus.tar.gz"
+nexus_install_dir: "{{ nexus_base_dir }}/nexus"
+nexus_data_dir: "{{ nexus_base_dir }}/sonatype-work"
 nexus_dir_mode: "0755"
 
-# Shell
+# ---------------- SHELL ----------------
 nexus_shell: "/bin/bash"
 
-# Service
+# ---------------- SERVICE ----------------
 nexus_service_name: "nexus"
 nexus_systemd_path: "/etc/systemd/system"
 
+# ---------------- NEXUS ----------------
 nexus_version: "3.78.2-04"
 nexus_download_url: "https://download.sonatype.com/nexus/3/nexus-unix-x86-64-{{ nexus_version }}.tar.gz"
-
-# Base directory
-nexus_base_dir: "/opt"
-
-# Temporary archive path
-nexus_tmp_archive: "{{ nexus_base_dir }}/nexus.tar.gz"
-
-# Shell (OS portable)
-nexus_shell: "/bin/bash"
-
-nexus_install_dir: "/opt/nexus"
-nexus_data_dir: "/opt/sonatype-work"
-
-nexus_user: "nexus"
-nexus_group: "nexus"
-
 nexus_port: 8081
 
+# ---------------- JVM ----------------
 java_xms: "1g"
 java_xmx: "1g"
 java_max_direct: "1g"
 
-# Nexus Access
+# ---------------- USER ----------------
+nexus_user: "nexus"
+nexus_group: "nexus"
+
+# ---------------- ACCESS ----------------
 nexus_url: "http://localhost:8081"
 nexus_admin_user: "admin"
 new_admin_password: "{{ lookup('env', 'NEXUS_ADMIN_PASSWORD') }}"
 
-
-# Role
+# ---------------- RBAC ----------------
 nexus_role_id: "ci-cache-read"
 nexus_role_name: "CI Cache Read"
 nexus_role_privileges:
@@ -48,7 +39,7 @@ nexus_role_privileges:
   - nx-repository-view-*-*-browse
 nexus_role_inherited: []
 
-# User
+# ---------------- USER CREATION ----------------
 nexus_user_id: ""
 nexus_user_password: "{{ lookup('env', 'BP_PASSWORD') }}"
 nexus_user_firstname: ""
@@ -57,12 +48,12 @@ nexus_user_email: ""
 nexus_user_roles:
   - "{{ nexus_role_id }}"
 
-# Repositories
+# ---------------- REPOSITORIES ----------------
 maven_proxy_repo: "maven-central"
 npm_proxy_repo: "npm-proxy"
 docker_proxy_repo: "docker-proxy"
 
-# Remote URL's
+# ---------------- REMOTE URLS ----------------
 maven_remote_url: "https://repo1.maven.org/maven2/"
 npm_remote_url: "https://registry.npmjs.org"
 docker_remote_url: "https://registry-1.docker.io"
