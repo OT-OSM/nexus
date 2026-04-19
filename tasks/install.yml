@@ -1,22 +1,3 @@
-- name: Install Java
-  apt:
-    name: "{{ java_package }}"
-    state: present
-    update_cache: yes
-
-- name: Install required packages
-  apt:
-    name:
-      - wget
-      - curl
-    state: present
-
-#  Ensure /opt exists
-- name: Ensure /opt directory exists
-  file:
-    path: /opt
-    state: directory
-    mode: '0755'
 
 #  Download Nexus only if not exists
 - name: Download Nexus
