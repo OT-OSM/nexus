@@ -18,9 +18,9 @@ nexus_download_url: "https://download.sonatype.com/nexus/3/nexus-unix-x86-64-{{ 
 nexus_port: 8081
 
 # ---------------- JVM ----------------
-java_xms: "1g"
-java_xmx: "1g"
-java_max_direct: "1g"
+java_xms: "2700m"
+java_xmx: "2700m"
+java_max_direct: "512m"
 
 # ---------------- USER ----------------
 nexus_user: "nexus"
