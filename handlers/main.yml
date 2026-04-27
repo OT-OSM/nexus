@@ -2,3 +2,8 @@
   service:
     name: nexus
     state: restarted
+
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted
