@@ -1,0 +1,19 @@
+server {
+    listen {{ nexus_https_port }} ssl;
+    server_name {{ nexus_domain }};
+
+    ssl_certificate {{ nexus_tls_cert_path }};
+    ssl_certificate_key {{ nexus_tls_key_path }};
+
+    location / {
+        proxy_pass http://localhost:{{ nexus_http_port }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+server {
+    listen 80;
+    server_name {{ nexus_domain }};
+    return 301 https://$host$request_uri;
+}
