@@ -9,3 +9,7 @@
 
 - name: Configure Nexus RBAC (roles and users)
   include_tasks: rbac.yml
+
+- name: Configure TLS (NGINX reverse proxy)
+  include_tasks: tls.yml
+  when: nexus_tls_enabled
