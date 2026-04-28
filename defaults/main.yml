@@ -57,31 +57,3 @@ docker_proxy_repo: "docker-proxy"
 maven_remote_url: "https://repo1.maven.org/maven2/"
 npm_remote_url: "https://registry.npmjs.org"
 docker_remote_url: "https://registry-1.docker.io"
-
-# ---------------- TLS FLAG ----------------
-nexus_tls_enabled: false
-
-# TLS mode → self_signed | provided
-nexus_tls_mode: self_signed
-
-# Domain
-nexus_domain: nexus.opstree.dev
-
-# Ports
-nexus_http_port: 8081
-nexus_https_port: 443
-
-# ---------------- CERT PATHS ----------------
-nexus_tls_cert_path: /etc/nginx/ssl/nexus.crt
-nexus_tls_key_path: /etc/nginx/ssl/nexus.key
-
-# ---------------- PROVIDED CERTS ----------------
-nexus_tls_cert_src: files/nexus.crt
-nexus_tls_key_src: files/nexus.key
-
-# ---------------- SELF-SIGNED DETAILS ----------------
-nexus_tls_country: IN
-nexus_tls_state: Telangana
-nexus_tls_city: Hyderabad
-nexus_tls_org: Opstree
-nexus_tls_common_name: "{{ nexus_domain }}"
