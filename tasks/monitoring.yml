@@ -1,0 +1,31 @@
+- name: Download JMX exporter
+  get_url:
+    url: "https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/{{ jmx_exporter_version }}/jmx_prometheus_javaagent-{{ jmx_exporter_version }}.jar"
+    dest: "{{ jmx_exporter_jar_path }}"
+    mode: '0755'
+  when: nexus_metrics_enabled
+
+  - name: Create JMX config directory
+  file:
+    path: "/opt/jmx"
+    state: directory
+    mode: '0755'
+
+- name: Create Nexus JMX config
+  copy:
+    dest: "{{ jmx_config_path }}"
+    content: |
+      startDelaySeconds: 0
+      lowercaseOutputName: true
+      lowercaseOutputLabelNames: true
+      rules:
+        - pattern: ".*"
+  when: nexus_metrics_enabled
+
+  - name: Add JMX exporter to nexus vmoptions
+  lineinfile:
+    path: "{{ nexus_install_dir }}/bin/nexus.vmoptions"
+    line: "-javaagent:{{ jmx_exporter_jar_path }}={{ jmx_exporter_port }}:{{ jmx_config_path }}"
+    state: present
+  notify: Restart Nexus
+  when: nexus_metrics_enabled
