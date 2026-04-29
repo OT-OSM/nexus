@@ -9,3 +9,6 @@
 
 - name: Configure Nexus RBAC (roles and users)
   include_tasks: rbac.yml
+
+- import_tasks: monitoring.yml
+  when: nexus_metrics_enabled
