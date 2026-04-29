@@ -54,4 +54,4 @@
     status_code: 204
   when:
     - password_file.stat.exists
-    - admin_check.status != 200
+    - admin_check.status == 200
