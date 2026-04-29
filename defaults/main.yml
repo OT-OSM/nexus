@@ -57,3 +57,10 @@ docker_proxy_repo: "docker-proxy"
 maven_remote_url: "https://repo1.maven.org/maven2/"
 npm_remote_url: "https://registry.npmjs.org"
 docker_remote_url: "https://registry-1.docker.io"
+
+# ---------------- Metric Monitoring ----------------
+nexus_metrics_enabled: true
+jmx_exporter_version: "0.20.0"
+jmx_exporter_port: 9113
+jmx_exporter_jar_path: "/opt/jmx_prometheus_javaagent-{{ jmx_exporter_version }}.jar"
+jmx_config_path: "/opt/jmx/nexus.yml"
