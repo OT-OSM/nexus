@@ -5,11 +5,12 @@
     mode: '0755'
   when: nexus_metrics_enabled
 
-  - name: Create JMX config directory
+- name: Create JMX config directory
   file:
     path: "/opt/jmx"
     state: directory
     mode: '0755'
+  when: nexus_metrics_enabled
 
 - name: Create Nexus JMX config
   copy:
@@ -22,10 +23,10 @@
         - pattern: ".*"
   when: nexus_metrics_enabled
 
-  - name: Add JMX exporter to nexus vmoptions
+- name: Add JMX exporter to nexus vmoptions
   lineinfile:
     path: "{{ nexus_install_dir }}/bin/nexus.vmoptions"
     line: "-javaagent:{{ jmx_exporter_jar_path }}={{ jmx_exporter_port }}:{{ jmx_config_path }}"
     state: present
-  notify: Restart Nexus
+  notify: restart nexus
   when: nexus_metrics_enabled
