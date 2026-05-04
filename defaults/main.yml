@@ -1,10 +1,66 @@
----
-# defaults file for ansible-nexus
-host_name: 'host'
-nexus_version: '3.22.0-02'
-nexus_port: 8082
-nexus_os_user: 'nexus'
-nexus_os_group: 'nexus'
-nexus_os_user_shell: '/bin/bash'
-nexus_installation_dir: '/opt'
-nexus_service_state: 'restarted'
+# ---------------- PATHS ----------------
+nexus_base_dir: "/opt"
+nexus_tmp_archive: "{{ nexus_base_dir }}/nexus.tar.gz"
+nexus_install_dir: "{{ nexus_base_dir }}/nexus"
+nexus_data_dir: "{{ nexus_base_dir }}/sonatype-work"
+nexus_dir_mode: "0755"
+
+# ---------------- SHELL ----------------
+nexus_shell: "/bin/bash"
+
+# ---------------- SERVICE ----------------
+nexus_service_name: "nexus"
+nexus_systemd_path: "/etc/systemd/system"
+
+# ---------------- NEXUS ----------------
+nexus_version: "3.78.2-04"
+nexus_download_url: "https://download.sonatype.com/nexus/3/nexus-unix-x86-64-{{ nexus_version }}.tar.gz"
+nexus_port: 8081
+
+# ---------------- JVM ----------------
+java_xms: "2700m"
+java_xmx: "2700m"
+java_max_direct: "512m"
+
+# ---------------- USER ----------------
+nexus_user: "nexus"
+nexus_group: "nexus"
+
+# ---------------- ACCESS ----------------
+nexus_url: "http://localhost:8081"
+nexus_admin_user: "admin"
+new_admin_password: "{{ lookup('env', 'NEXUS_ADMIN_PASSWORD') }}"
+
+# ---------------- RBAC ----------------
+nexus_role_id: "ci-cache-read"
+nexus_role_name: "CI Cache Read"
+nexus_role_privileges:
+  - nx-repository-view-*-*-read
+  - nx-repository-view-*-*-browse
+nexus_role_inherited: []
+
+# ---------------- USER CREATION ----------------
+nexus_user_id: ""
+nexus_user_password: "{{ lookup('env', 'BP_PASSWORD') }}"
+nexus_user_firstname: ""
+nexus_user_lastname: ""
+nexus_user_email: ""
+nexus_user_roles:
+  - "{{ nexus_role_id }}"
+
+# ---------------- REPOSITORIES ----------------
+maven_proxy_repo: "maven-central"
+npm_proxy_repo: "npm-proxy"
+docker_proxy_repo: "docker-proxy"
+
+# ---------------- REMOTE URLS ----------------
+maven_remote_url: "https://repo1.maven.org/maven2/"
+npm_remote_url: "https://registry.npmjs.org"
+docker_remote_url: "https://registry-1.docker.io"
+
+# ---------------- Metric Monitoring ----------------
+nexus_metrics_enabled: true
+jmx_exporter_version: "0.20.0"
+jmx_exporter_port: 9113
+jmx_exporter_jar_path: "/opt/jmx_prometheus_javaagent-{{ jmx_exporter_version }}.jar"
+jmx_config_path: "/opt/jmx/nexus.yml"

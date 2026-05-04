@@ -1,0 +1,101 @@
+- name: Get existing repositories
+  uri:
+    url: "{{ nexus_url }}/service/rest/v1/repositories"
+    method: GET
+    user: admin
+    password: "{{ new_admin_password }}"
+    force_basic_auth: yes
+  register: repo_list
+
+# ---------------- MAVEN PROXY ----------------
+- name: Create Maven Proxy
+  uri:
+    url: "{{ nexus_url }}/service/rest/v1/repositories/maven/proxy"
+    method: POST
+    user: admin
+    password: "{{ new_admin_password }}"
+    force_basic_auth: yes
+    body_format: json
+    status_code: 201
+    body:
+      name: "{{ maven_proxy_repo }}"
+      online: true
+      storage:
+        blobStoreName: default
+        strictContentTypeValidation: true
+      proxy:
+        remoteUrl: "{{ maven_remote_url }}"
+        contentMaxAge: 1440
+        metadataMaxAge: 1440
+      negativeCache:
+        enabled: true
+        timeToLive: 1440
+      httpClient:
+        blocked: false
+        autoBlock: true
+      maven:
+        versionPolicy: RELEASE
+        layoutPolicy: STRICT
+  when: maven_proxy_repo not in (repo_list.json | map(attribute='name') | list)
+
+# ---------------- NPM PROXY ----------------
+- name: Create npm Proxy
+  uri:
+    url: "{{ nexus_url }}/service/rest/v1/repositories/npm/proxy"
+    method: POST
+    user: admin
+    password: "{{ new_admin_password }}"
+    force_basic_auth: yes
+    body_format: json
+    status_code: 201
+    body:
+      name: "{{ npm_proxy_repo }}"
+      online: true
+      storage:
+        blobStoreName: default
+        strictContentTypeValidation: true
+      proxy:
+        remoteUrl: "{{ npm_remote_url }}"
+        contentMaxAge: 1440
+        metadataMaxAge: 1440
+      negativeCache:
+        enabled: true
+        timeToLive: 1440
+      httpClient:
+        blocked: false
+        autoBlock: true
+  when: npm_proxy_repo not in (repo_list.json | map(attribute='name') | list)
+
+# ---------------- DOCKER PROXY ----------------
+- name: Create Docker Proxy
+  uri:
+    url: "{{ nexus_url }}/service/rest/v1/repositories/docker/proxy"
+    method: POST
+    user: admin
+    password: "{{ new_admin_password }}"
+    force_basic_auth: yes
+    body_format: json
+    status_code: 201
+    body:
+      name: "{{ docker_proxy_repo }}"
+      online: true
+      storage:
+        blobStoreName: default
+        strictContentTypeValidation: true
+      proxy:
+        remoteUrl: "{{ docker_remote_url }}"
+        contentMaxAge: 1440
+        metadataMaxAge: 1440
+      negativeCache:
+        enabled: true
+        timeToLive: 1440
+      httpClient:
+        blocked: false
+        autoBlock: true
+      docker:
+        v1Enabled: false
+        forceBasicAuth: true
+        httpPort: 5000
+      dockerProxy:
+        indexType: HUB
+  when: docker_proxy_repo not in (repo_list.json | map(attribute='name') | list)
